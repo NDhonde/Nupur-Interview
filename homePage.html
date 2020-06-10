@@ -1,0 +1,114 @@
+<!doctype HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		
+		<title>Phone Address Book</title>
+		
+		<meta name="description" content="A record of all contacts">		
+		<meta name="author" content="Nupur Gaikwad">
+	
+		<style>
+			#mainHeadingId {
+				color:	white;
+				font-size: 40px;
+			}
+			
+			#addContactBtnId {
+				position: relative;
+				top: -60px;
+				left: 400px;
+				width: 20px;
+				height: 20px;
+			}
+			
+			#allContactsDivId {
+				z-index:	2;
+				color: white;
+			}
+			
+			body {
+				background-color:	black;
+				font-family:	times new roman;
+			}
+		</style>
+	</head>
+	
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src = "addingContact.js"></script>
+	<script src = "contactTable.js"></script>
+	
+	
+	<body id = "homePageBodyId">
+		<h1 id = "mainHeadingId">Phone Address Book</h1>		
+		<button id = "addContactBtnId">+</button>
+		<input type = "text" id = "searchInputId">
+		<button id = "searchButtonId">Search</button>
+		
+		<div id = "searchedResultsId"></div>
+		<div id = "allContactsDivId"></div>
+		
+		<script>
+			var contactList = new Array();
+			
+			function updateContact(contactObj) {
+				contactList.push(contactObj);
+				var initial = contactObj.firstName.charAt(0);
+				var newContactRow = document.createElement('tr');
+				newContactRow.id = contactObj.firstName + contactObj.lastName + "Id";
+				var newContactData = document.createElement('td');
+				var newContactText = document.createTextNode(contactObj.firstName + " " + contactObj.lastName);
+				newContactData.appendChild(newContactText);
+				newContactData.onclick = function() {
+					displayContact(contactObj);
+				}
+				newContactRow.appendChild(newContactData);
+		
+				var tbodyId = initial + "ContactsSectionId";
+
+				document.querySelector("#" + tbodyId).appendChild(newContactRow);
+			}
+			
+			function displaySearchResults() {				
+				var searchTarget = document.querySelector("#searchInputId").value;
+				
+				var searchResults = new Array();
+				
+				for (var i = 0; i < contactList.length; i++) {
+					var contact = contactList[i];
+					for(var i = 0; i < (contact.firstName.length - searchTarget.length); i++) {
+						if( contact.firstName.substring(i,searchTarget.length) == searchTarget)
+							searchResults.push(contact);
+					}
+					for(var i = 0; i < (contact.lastName.length - searchTarget.length); i++) {
+						if( contact.lastName.substring(i,searchTarget.length) == searchTarget)
+							searchResults.push(contact);
+					}
+				}
+				
+				if(searchResults.length > 0) {
+					printSearchResults(searchResults);
+				}
+			}
+			
+			function printSearchResults(searchResults) {
+				var resultsTable = document.createElement('table');
+				resultsTable.style.color = "white";
+				for (var i = 0; i < searchResults.length; i++) {
+					var resultRow = document.createElement('tr');
+					var resultText = document.createTextNode(searchResults[i].firstName);
+					resultRow.appendChild(resultText);
+					resultRow.onclick = function() {
+						displayContact(contactObj);
+					}
+					resultsTable.appendChild(resultRow);
+				}
+				document.querySelector("#searchedResultsId").appendChild(resultsTable);
+			}
+			
+			document.body.onload = initializeContactTable;
+			document.querySelector("#addContactBtnId").onclick = showNewContactDiv;
+			document.querySelector("#searchButtonId").onclick = displaySearchResults;
+		</script>
+	</body>
+</html>
